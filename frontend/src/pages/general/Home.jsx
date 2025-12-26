@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import '../../styles/reels.css'
 import ReelFeed from '../../components/ReelFeed'
+import logo from '../../assets/logo.png'
 
 const Home = () => {
     const [videos, setVideos] = useState([])
     // Autoplay behavior is handled inside ReelFeed
 
     useEffect(() => {
-        axios.get("http://localhost:3000/api/food", { withCredentials: true })
+        axios.get(`${import.meta.env.VITE_API_URL}/api/food`, { withCredentials: true })
             .then(response => {
 
                 console.log(response.data);
@@ -22,7 +23,7 @@ const Home = () => {
 
     async function likeVideo(item) {
 
-        const response = await axios.post("http://localhost:3000/api/food/like", { foodId: item._id }, { withCredentials: true })
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/food/like`, { foodId: item._id }, { withCredentials: true })
 
         if (response.data.like) {
             console.log("Video liked");
@@ -35,7 +36,7 @@ const Home = () => {
     }
 
     async function saveVideo(item) {
-        const response = await axios.post("http://localhost:3000/api/food/save", { foodId: item._id }, { withCredentials: true })
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/food/save`, { foodId: item._id }, { withCredentials: true })
 
         if (response.data.save) {
             setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, savesCount: v.savesCount + 1, isSaved: true } : v))
@@ -48,7 +49,7 @@ const Home = () => {
 
     async function handleLogout() {
         try {
-            await axios.get("http://localhost:3000/api/user/logout");
+            await axios.get(`${import.meta.env.VITE_API_URL}/api/user/logout`);
             localStorage.removeItem('token'); // Clear token if stored
             window.location.href = '/user/login';
         } catch (err) {
@@ -59,7 +60,8 @@ const Home = () => {
 
     return (
         <>
-            <header className="home-header">
+            <header className="home-header" style={{ justifyContent: 'space-between' }}>
+                <img src={logo} alt="FlavorFeed" style={{ height: '40px', objectFit: 'contain' }} />
                 <div className="profile-container">
                     <button
                         className="profile-icon-btn"

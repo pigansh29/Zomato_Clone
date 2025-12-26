@@ -4,15 +4,20 @@ import '../../styles/auth-shared.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import logo from '../../assets/logo.png';
+
 const UserRegister = () => {
 
     const navigate = useNavigate();
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
+        // ... (existing submit logic)
         e.preventDefault();
         setError("");
-
+        setLoading(true);
+        /* ... existing logic ... */
         const firstName = e.target.firstName.value;
         const lastName = e.target.lastName.value;
         const email = e.target.email.value;
@@ -20,7 +25,7 @@ const UserRegister = () => {
 
 
         try {
-            const response = await axios.post("http://localhost:3000/api/auth/user/register", {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/user/register`, {
                 fullName: firstName + " " + lastName,
                 email,
                 password
@@ -35,6 +40,8 @@ const UserRegister = () => {
         } catch (err) {
             console.error(err);
             setError(err.response?.data?.message || "Registration failed. Please try again.");
+        } finally {
+            setLoading(false);
         }
 
     };
@@ -42,7 +49,8 @@ const UserRegister = () => {
     return (
         <div className="auth-page-wrapper">
             <div className="auth-card" role="region" aria-labelledby="user-register-title">
-                <header>
+                <header style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img src={logo} alt="FlavorFeed" style={{ width: '80px', height: 'auto', marginBottom: '1rem', objectFit: 'contain' }} />
                     <h1 id="user-register-title" className="auth-title">Create your account</h1>
                     <p className="auth-subtitle">Join to explore and enjoy delicious meals.</p>
                 </header>
@@ -50,26 +58,28 @@ const UserRegister = () => {
                     <strong style={{ fontWeight: 600 }}>Switch:</strong> <Link to="/user/register">User</Link> • <Link to="/food-partner/register">Food partner</Link>
                 </nav>
                 <form className="auth-form" onSubmit={handleSubmit} noValidate>
-                    {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+                    {error && <div style={{ color: 'red', backgroundColor: '#fee2e2', padding: '0.5rem', borderRadius: '4px', border: '1px solid #fecaca', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
                     <div className="two-col">
                         <div className="field-group">
                             <label htmlFor="firstName">First Name</label>
-                            <input id="firstName" name="firstName" placeholder="Jane" autoComplete="given-name" required />
+                            <input id="firstName" name="firstName" placeholder="Jane" autoComplete="given-name" required disabled={loading} />
                         </div>
                         <div className="field-group">
                             <label htmlFor="lastName">Last Name</label>
-                            <input id="lastName" name="lastName" placeholder="Doe" autoComplete="family-name" required />
+                            <input id="lastName" name="lastName" placeholder="Doe" autoComplete="family-name" required disabled={loading} />
                         </div>
                     </div>
                     <div className="field-group">
                         <label htmlFor="email">Email</label>
-                        <input id="email" name="email" type="email" placeholder="you@example.com" autoComplete="email" required />
+                        <input id="email" name="email" type="email" placeholder="you@example.com" autoComplete="email" required disabled={loading} />
                     </div>
                     <div className="field-group">
                         <label htmlFor="password">Password</label>
-                        <input id="password" name="password" type="password" placeholder="••••••••" autoComplete="new-password" required />
+                        <input id="password" name="password" type="password" placeholder="••••••••" autoComplete="new-password" required disabled={loading} />
                     </div>
-                    <button className="auth-submit" type="submit">Sign Up</button>
+                    <button className="auth-submit" type="submit" disabled={loading}>
+                        {loading ? "Creating Account..." : "Sign Up"}
+                    </button>
                 </form>
                 <div className="auth-alt-action">
                     Already have an account? <Link to="/user/login">Sign in</Link>

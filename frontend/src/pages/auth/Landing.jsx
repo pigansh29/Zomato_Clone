@@ -2,11 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/auth-shared.css';
 
+import logo from '../../assets/logo.png';
+
 const Landing = () => {
     return (
         <div className="auth-page-wrapper">
             <div className="auth-card" role="region" aria-labelledby="landing-title">
-                <header>
+                <header style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img src={logo} alt="FlavorFeed" style={{ width: '120px', height: 'auto', marginBottom: '1rem', objectFit: 'contain' }} />
                     <h1 id="landing-title" className="auth-title">Welcome</h1>
                     <p className="auth-subtitle">Please select how you would like to login.</p>
                 </header>

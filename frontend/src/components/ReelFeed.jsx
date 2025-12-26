@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 // - onLike: (item) => void | Promise<void>
 // - onSave: (item) => void | Promise<void>
 // - emptyMessage: string
-const ReelFeed = ({ items = [], onLike, onSave, emptyMessage = 'No videos yet.' }) => {
+const ReelFeed = ({ items = [], onLike, onSave, emptyMessage = 'No videos yet.', style, className }) => {
   const videoRefs = useRef(new Map())
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const ReelFeed = ({ items = [], onLike, onSave, emptyMessage = 'No videos yet.' 
   }
 
   return (
-    <div className="reels-page">
+    <div className={`reels-page ${className || ''}`} style={style}>
       <div className="reels-feed" role="list">
         {items.length === 0 && (
           <div className="empty-state">
