@@ -10,10 +10,18 @@ const app = express();
 const allowedOrigins = ["http://localhost:5173", "http://localhost:5174", "https://zomato-clone-anab.vercel.app"];
 app.use(cors({
     origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
+
+        // Check if origin is in the allowed list
+        // We compare exactly, but we also check if the allowed list contains the origin without a trailing slash (if it has one)
+        const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+
+        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.indexOf(normalizedOrigin) !== -1) {
             return callback(null, true);
         }
+
+        console.error(`CORS Error: Origin ${origin} not allowed`);
         return callback(new Error('Not allowed by CORS'));
     },
     credentials: true
