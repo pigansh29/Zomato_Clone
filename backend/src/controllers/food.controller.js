@@ -38,6 +38,14 @@ async function getFoodItems(req, res) {
         });
     }
 
+    // Fix for mixed content errors on deployment: replace localhost URLs with Render URL
+    const BASE_URL = process.env.BASE_URL || "https://zomato-clone-1-rb6k.onrender.com";
+    foodItems.forEach(item => {
+        if (item.video && item.video.includes("http://localhost:3000")) {
+            item.video = item.video.replace("http://localhost:3000", BASE_URL);
+        }
+    });
+
     res.status(200).json({
         message: "Food items fetched successfully",
         foodItems
