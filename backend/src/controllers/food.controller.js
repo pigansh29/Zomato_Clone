@@ -39,7 +39,13 @@ async function getFoodItems(req, res) {
     }
 
     // Fix for mixed content errors on deployment: replace localhost URLs with Render URL
-    const BASE_URL = process.env.BASE_URL || "https://zomato-clone-1-rb6k.onrender.com";
+    let BASE_URL = process.env.BASE_URL;
+
+    // Fallback if BASE_URL is missing or incorrectly set to localhost in production
+    if (!BASE_URL || BASE_URL.includes("localhost")) {
+        BASE_URL = "https://zomato-clone-1-rb6k.onrender.com";
+    }
+
     foodItems.forEach(item => {
         if (item.video && item.video.includes("http://localhost:3000")) {
             item.video = item.video.replace("http://localhost:3000", BASE_URL);
@@ -138,11 +144,23 @@ async function getSaveFood(req, res) {
 
     const user = req.user;
 
-    const savedFoods = await saveModel.find({ user: user._id }).populate('food');
+    const savedFoods = await saveModel.find({ user: user._id }).populate('food').lean();
 
     if (!savedFoods || savedFoods.length === 0) {
         return res.status(404).json({ message: "No saved foods found" });
     }
+
+    // Fix for mixed content errors on deployment
+    let BASE_URL = process.env.BASE_URL;
+    if (!BASE_URL || BASE_URL.includes("localhost")) {
+        BASE_URL = "https://zomato-clone-1-rb6k.onrender.com";
+    }
+
+    savedFoods.forEach(item => {
+        if (item.food && item.food.video && item.food.video.includes("http://localhost:3000")) {
+            item.food.video = item.food.video.replace("http://localhost:3000", BASE_URL);
+        }
+    });
 
     res.status(200).json({
         message: "Saved foods retrieved successfully",
